@@ -31,3 +31,5 @@ Because this project is built exclusively with ELPL, it requires the ELPL custom
    `./gradlew clean assembleDebug`
 
 *(Note: Production backend credentials such as `google-services.json` and release keystores have been intentionally excluded from this repository for security purposes.)*
+
+[![Get it on Google Play](https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png)](https://play.google.com/store/apps/details?id=com.syedm.testproject)
