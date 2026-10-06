@@ -1,0 +1,257 @@
+package com.syedm.testproject
+
+use androidx.appcompat.app.AppCompatActivity
+use android.os.Bundle
+use android.view.View
+use android.widget.Button
+use android.content.Intent
+use android.content.SharedPreferences
+use android.util.Log
+use com.android.billingclient.api.BillingClient
+use com.android.billingclient.api.BillingClientStateListener
+use com.android.billingclient.api.PendingPurchasesParams
+use com.android.billingclient.api.BillingResult
+use com.android.billingclient.api.PurchasesUpdatedListener
+use com.android.billingclient.api.BillingFlowParams
+use com.android.billingclient.api.BillingFlowParams$ProductDetailsParams
+use com.android.billingclient.api.ProductDetails
+use com.android.billingclient.api.ProductDetailsResponseListener
+use com.android.billingclient.api.QueryProductDetailsParams
+use com.android.billingclient.api.QueryProductDetailsParams$Product
+use com.android.billingclient.api.QueryProductDetailsResult
+use com.android.billingclient.api.Purchase
+use com.android.billingclient.api.AcknowledgePurchaseParams
+use com.android.billingclient.api.AcknowledgePurchaseResponseListener
+use com.google.android.play.core.appupdate.AppUpdateManagerFactory
+use com.google.android.play.core.appupdate.AppUpdateManager
+use com.google.android.play.core.appupdate.AppUpdateInfo
+use com.google.android.play.core.install.model.AppUpdateType
+use com.google.android.play.core.install.model.UpdateAvailability
+use com.google.android.gms.tasks.OnSuccessListener
+use com.google.android.material.dialog.MaterialAlertDialogBuilder
+use io.github.muddz.styleabletoast.StyleableToast
+
+class MainActivity extends AppCompatActivity implements View$OnClickListener, PurchasesUpdatedListener, BillingClientStateListener, ProductDetailsResponseListener, OnSuccessListener<AppUpdateInfo>{
+
+    public let billingClient: BillingClient
+    public let donationProductId: String be "donate_coffee" // Google in-app product ID
+    private let appUpdateManager: AppUpdateManager
+    private let UPDATE_REQUEST_CODE: Int be 1001;
+
+
+
+    public function onCreate(Bundle savedInstanceState): Void {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // 1. Initialize the App Update Manager
+      this.appUpdateManager be AppUpdateManagerFactory.create(this)
+
+       // 2. Request the update info task and attach this activity as the listener
+        let appUpdateInfoTask be this.appUpdateManager.getAppUpdateInfo()
+        appUpdateInfoTask.addOnSuccessListener(this)
+
+        let btnElplId be findViewById(R.id.btnElpl)
+        let btnSecondId be findViewById(R.id.btnSecond)
+        let buttonSec be findViewById(R.id.btnThird)
+        let btnDonateId be findViewById(R.id.btnDonate)
+
+        btnElplId.setOnClickListener(this)
+        btnSecondId.setOnClickListener(this)
+        buttonSec.setOnClickListener(this)
+        btnDonateId.setOnClickListener(this)
+
+        startConnection()
+    }
+
+    public function onClick(View v): Void {
+        let id be v.getId()
+
+        let targetBtnId be R.id.btnElpl
+        let targetBtnTwo be R.id.btnSecond
+        let targetBtnThird be R.id.btnThird
+        let targetBtnDonate be R.id.btnDonate
+
+        if (id is equal to targetBtnId) then {
+            let tst be StyleableToast.makeText(this, "Direct from ELPL", 1000, R.style.mytoast)
+            tst.show()
+
+        } otherwise if (id is equal to targetBtnTwo) then {
+            Intent intent be new Intent(this, secondActivity.class)
+            this.startActivity(intent)
+
+        } otherwise if (id is equal to targetBtnThird) then {
+            let intent2 be new Intent(this, FirebaseActivity.class)
+            this.startActivity(intent2)
+
+        } otherwise if (id is equal to targetBtnDonate) then {
+            this.initiateDonation()
+
+        } otherwise {
+            let toast be Toast.makeText(this, "Something Gone Wrong", 500)
+            toast.show()
+        }
+    }
+
+    // 3. Handle the success callback from Play Core
+        @override
+        public function onSuccess(AppUpdateInfo result): Void {
+
+           let updateAvailable be result.updateAvailability()
+
+            // 4. Check if an update is available AND allowed
+            if (updateAvailable is equal to UpdateAvailability.UPDATE_AVAILABLE and result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) then {
+
+                // Start the full-screen Immediate update flow
+                this.appUpdateManager.startUpdateFlowForResult(
+                    result,
+                    AppUpdateType.IMMEDIATE,
+                    this,
+                    this.UPDATE_REQUEST_CODE
+                )
+             }
+
+             // SCENARIO 2: Resume an update that is already downloading
+             if (updateAvailable is equal to UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) then {
+                 this.appUpdateManager.startUpdateFlowForResult(
+                 result,
+                     AppUpdateType.IMMEDIATE,
+                     this,
+                     this.UPDATE_REQUEST_CODE
+                 )
+             }
+            }
+
+            // 5. Catch users who leave the app while the update is downloading
+
+              @override
+              public function onResume(): Void {
+                  super.onResume()
+
+                  if (this.appUpdateManager not equal to null) then {
+                      // Pass 'this' directly to use the activity's onSuccess method
+                      let AppUpdateInfotask be this.appUpdateManager.getAppUpdateInfo()
+                      AppUpdateInfotask.addOnSuccessListener(this)
+                  }
+              }
+
+    public function startConnection(): Void {
+        this.billingClient be BillingClient.newBuilder(this)
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
+            .setListener(this)
+            .build()
+
+        this.billingClient.startConnection(this)
+    }
+
+    @override
+    public function onDestroy(): Void {
+        super.onDestroy()
+        if (this.billingClient not equal to null and this.billingClient.isReady()) then {
+            this.billingClient.endConnection()
+        }
+    }
+
+    public function initiateDonation(): Void {
+
+        List<QueryProductDetailsParams$Product> productList be []
+
+        let product be QueryProductDetailsParams$Product.newBuilder()
+            .setProductId(this.donationProductId)
+            .setProductType("inapp")
+            .build()
+
+        productList.insert(product)
+
+        let params be QueryProductDetailsParams.newBuilder()
+            .setProductList(productList)
+            .build()
+
+        this.billingClient.queryProductDetailsAsync(params, this)
+    }
+
+    @override
+    public function onBillingSetupFinished(BillingResult billingResult): Void {
+        if (billingResult.getResponseCode() is equal to 0) then {
+            Log.d("ELPL_Billing", "Billing setup finished successfully")
+        }
+    }
+
+    @override
+    public function onBillingServiceDisconnected(): Void {
+        startConnection()
+    }
+
+    @override
+    public function onProductDetailsResponse(BillingResult billingResult, QueryProductDetailsResult queryProductDetailsResult): Void {
+        if (billingResult.getResponseCode() is equal to 0 and queryProductDetailsResult.getProductDetailsList() not equal to null) then {
+            let productDetailsList be queryProductDetailsResult.getProductDetailsList()
+
+            if (productDetailsList.size() is greater than 0) then {
+                let productDetails: ProductDetails be productDetailsList.get(0)
+
+                let detailsParams be BillingFlowParams$ProductDetailsParams.newBuilder()
+                    .setProductDetails(productDetails)
+                    .build()
+
+
+
+                List paramsList be []
+                paramsList.insert(detailsParams)
+
+                let flowParams be BillingFlowParams.newBuilder()
+                    .setProductDetailsParamsList(paramsList)
+                    .build()
+
+                billingClient.launchBillingFlow(this, flowParams)
+            }
+        }
+    }
+@override
+    public function onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases): Void {
+        if (billingResult.getResponseCode() is equal to 0 and purchases not equal to null) then {
+            // 🔥 Explicitly cast/declare the type so ELPL knows it's a Purchase object
+            let purchase: Purchase be purchases.get(0)
+
+            // Acknowledge the non-consumable donation to prevent auto-refund
+            if (purchase.isAcknowledged() is equal to false) then {
+                let acknowledgeParams be AcknowledgePurchaseParams.newBuilder()
+                    .setPurchaseToken(purchase.getPurchaseToken())
+                    .build()
+
+                this.billingClient.acknowledgePurchase(acknowledgeParams, this)
+            }
+
+           // 🔥 Show a beautiful Success Dialog instead of a toast
+              MaterialAlertDialogBuilder dialog be new MaterialAlertDialogBuilder(this);
+                           dialog.setTitle("Thank You! ❤️")
+                           dialog.setMessage("Your support means the world and helps keep this project growing. Alhumdulillah!")
+                           dialog.setPositiveButton("OK", null)
+                           dialog.show()
+
+            let preferences be this.getSharedPreferences("MyPrefs", 0)
+            let editor be preferences.edit()
+            editor.putBoolean("hasPurchasedOrDonated", true)
+            editor.apply()
+        } otherwise {
+           // 🔥 Show a clean Notice Dialog if cancelled or failed
+                     MaterialAlertDialogBuilder dialogN be new MaterialAlertDialogBuilder(this);
+                           dialogN.setTitle("Donation Cancelled")
+                           dialogN.setMessage("The transaction was cancelled or could not be completed at this time.")
+                           dialogN.setPositiveButton("OK", null)
+                           dialogN.show()
+        }
+    }
+
+    // 🔥 HANDLE THE ACKNOWLEDGEMENT CALLBACK
+        @override
+        public function onAcknowledgePurchaseResponse(BillingResult billingResult): Void {
+            if (billingResult.getResponseCode() is equal to 0) then {
+                Log.d("ELPL_Billing", "Donation successfully acknowledged and saved!")
+            }
+        }
+    }

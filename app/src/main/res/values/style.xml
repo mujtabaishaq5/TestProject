@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="mytoast">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#FFEB3B</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stColorBackground">#D93030</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stStrokeWidth">3dp</item>
+        <item name="stStrokeColor">#121212</item>
+        <item name="stLength">LONG</item>
+        <item name="stRadius">5dp</item>
+    </style>
+
+    <style name="ontst">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#4CAF50</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stColorBackground">#DBDADA</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stStrokeWidth">3dp</item>
+        <item name="stStrokeColor">#121212</item>
+        <item name="stLength">LONG</item>
+        <item name="stRadius">5dp</item>
+    </style>
+
+    <style name="offtst">
+        <item name="stTextBold">true</item>
+        <item name="stTextColor">#FFEB3B</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stColorBackground">#1D1D1D</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stStrokeWidth">3dp</item>
+        <item name="stStrokeColor">#121212</item>
+        <item name="stLength">LONG</item>
+        <item name="stRadius">5dp</item>
+    </style>
+
+</resources>

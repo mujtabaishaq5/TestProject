@@ -1,0 +1,42 @@
+package com.syedm.testproject
+
+use androidx.appcompat.app.AppCompatActivity
+use android.os.Bundle
+use android.content.Intent
+use android.os.Handler
+use android.os.Looper
+use android.widget.TextView
+use android.graphics.Color
+use java.lang.Runnable // No runnable in ELPL, so you have to leverage Jvm's
+
+
+class SplashScreenActivity extends AppCompatActivity implements Runnable {
+
+     private final let VERSION: String be "4.1.1";
+
+    public function onCreate(Bundle savedInstanceState): Void {
+        super.onCreate(savedInstanceState)
+
+
+        setContentView(R.layout.activity_splash)
+
+                TextView versionText be findViewById(R.id.appVersion)
+
+
+                let SetT be "Version: " VERSION
+                versionText.setText(SetT)
+
+
+        let looper: Looper be Looper.getMainLooper()
+        let handler: Handler be new Handler(looper)
+        let delay: Long be 2500
+
+        handler.postDelayed(this, delay)
+    }
+
+    public function run(): Void {
+        Intent intent be new Intent(this, MainActivity.class)
+        startActivity(intent)
+        finish()
+    }
+}

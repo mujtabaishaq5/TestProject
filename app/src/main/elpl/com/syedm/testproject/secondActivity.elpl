@@ -1,0 +1,105 @@
+package com.syedm.testproject
+
+use androidx.appcompat.app.AppCompatActivity
+use android.os.Bundle
+use android.view.View
+use android.widget.TextView
+use android.widget.ImageButton
+use com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+use com.github.barteksc.pdfviewer.PDFView
+use com.github.barteksc.pdfviewer.link.DefaultLinkHandler
+use com.github.barteksc.pdfviewer.util.FitPolicy
+use com.github.barteksc.pdfviewer.listener.OnPageChangeListener
+use io.github.muddz.styleabletoast.StyleableToast
+
+class secondActivity extends AppCompatActivity implements View$OnClickListener, OnPageChangeListener{
+
+    public let pdfView: PDFView
+    public let btnNightMode: ExtendedFloatingActionButton
+    public let btnPrev: View
+    public let btnNext: View
+    public let txtPageIndicator: TextView
+    public let isNightMode: Boolean be false
+    public let currentPage: Int be 0
+    public let totalPages: Int be 1
+
+    public function onCreate(Bundle savedInstanceState): Void {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_pdf_viewer)
+
+        this.pdfView be findViewById(R.id.pdfView)
+        this.btnNightMode be findViewById(R.id.btnNightMode)
+        this.btnPrev be findViewById(R.id.btnPrev)
+        this.btnNext be findViewById(R.id.btnNext)
+        this.txtPageIndicator be findViewById(R.id.txtPageIndicator)
+
+        loadPdf(0)
+
+        btnNightMode.setOnClickListener(this)
+        btnPrev.setOnClickListener(this)
+        btnNext.setOnClickListener(this)
+    }
+
+    private function loadPdf(Int pageIndex): Void {
+        let page be new PageNumberRenderer(pdfView, isNightMode)
+        let linker be new DefaultLinkHandler(pdfView)
+
+        pdfView.fromAsset("sample.pdf")
+            .defaultPage(pageIndex)
+            .onDraw(page)
+            .linkHandler(linker)
+            .onPageChange(this)
+            .enableSwipe(true)
+            .swipeHorizontal(false)
+            .enableAntialiasing(true)
+            .pageFitPolicy(FitPolicy.WIDTH)
+            .nightMode(isNightMode)
+            .load()
+    }
+
+   @override
+   public function onPageChanged(Int page, Int pageCount): Void {
+       this.currentPage be page
+       this.totalPages be pageCount
+
+
+       let realPage be page add 1
+       let statusText be "Page " realPage " of " pageCount
+
+       this.txtPageIndicator.setText(statusText)
+   }
+
+    @override
+    public function onClick(View v): Void {
+        let Id be v.getId()
+        let nightBtnId be R.id.btnNightMode
+        let prevBtnId be R.id.btnPrev
+        let nextBtnId be R.id.btnNext
+
+        if (Id is equal to nightBtnId) then {
+            if (isNightMode) then {
+                this.isNightMode be false
+                let tst be StyleableToast.makeText(this, "Night mode off", 1000, R.style.offtst)
+                tst.show()
+            } otherwise {
+                this.isNightMode be true
+                let toast be StyleableToast.makeText(this, "Night mode On", 1000, R.style.ontst)
+                toast.show()
+            }
+            let current be pdfView.getCurrentPage()
+            loadPdf(current)
+
+        } otherwise if (Id is equal to prevBtnId) then {
+
+            if (currentPage is greater than 0) then {
+                pdfView.jumpTo(currentPage subtract 1)
+            }
+
+        } otherwise if (Id is equal to nextBtnId) then {
+
+            if (currentPage is less than totalPages subtract 1) then {
+                pdfView.jumpTo(currentPage add 1)
+            }
+        }
+    }
+}

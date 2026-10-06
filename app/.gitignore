@@ -1,0 +1,9 @@
+/build
+# Google Services & Firebase
+google-services.json
+app/google-services.json
+
+# Play Store Release Keystore & Passwords
+*.jks
+*.keystore
+key.properties

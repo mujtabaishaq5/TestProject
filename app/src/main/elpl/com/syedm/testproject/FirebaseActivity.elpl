@@ -1,0 +1,60 @@
+package com.syedm.testproject
+
+use androidx.appcompat.app.AppCompatActivity
+use android.os.Bundle
+use android.view.View
+use android.widget.Button
+use android.widget.LinearLayout
+use android.widget.Toast
+use com.google.firebase.FirebaseApp
+use com.google.firebase.database.FirebaseDatabase
+use com.google.firebase.database.DatabaseReference
+
+class FirebaseActivity extends AppCompatActivity implements View$OnClickListener {
+
+    let btnSend: Button
+    let database: FirebaseDatabase
+    let myRef: DatabaseReference
+    let clickCount: Int
+
+    public function onCreate(Bundle savedInstanceState): Void {
+        super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(this)
+     // Have not used xml for this, Created layout programmtically
+        LinearLayout layout be new LinearLayout(this)
+        layout.setOrientation(1)
+        layout.setGravity(17)
+
+        this.btnSend be new Button(this)
+        btnSend.setText("Send to Firebase")
+        btnSend.setGravity(17)
+        btnSend.setBackgroundColor(Color.parseColor("#F5E5A4")); // sweet yellow color
+
+        layout.addView(this.btnSend)
+        this.setContentView(layout)
+
+        // Native static method call (ELPL handles this perfectly!)
+        this.database be FirebaseDatabase.getInstance()
+
+        this.myRef be this.database.getReference("elpl_test")
+        btnSend.setOnClickListener(this)
+    }
+
+  @override
+  public function onClick(View v): Void {
+      if (clickCount is less than 3) then {
+          clickCount pels 1
+
+          let message be "Hello from ELPL! Click count: " this.clickCount
+          this.myRef.push().setValue(message)
+
+          let tst be Toast.makeText(this, "Data sent to Firebase!", 1000)
+          tst.show()
+
+      } otherwise {
+          let toast be Toast.makeText(this, "Max clicks reached!", 1000)
+          toast.show()
+      }
+  }
+}

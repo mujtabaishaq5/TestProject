@@ -1,0 +1,65 @@
+package com.syedm.testproject
+
+use android.graphics.Canvas
+use android.graphics.Paint
+use android.graphics.Color
+use com.github.barteksc.pdfviewer.PDFView
+use com.github.barteksc.pdfviewer.listener.OnDrawListener
+
+class PageNumberRenderer implements OnDrawListener {
+
+    let paint: Paint
+    let pdfView: PDFView
+    let isNightMode: Boolean
+
+    // Accept the night mode state here
+    function PageNumberRenderer(PDFView pdfView, Boolean isNightMode): Void {
+        this.paint be new Paint()
+        this.paint.setTextSize(40.0f)
+        this.pdfView be pdfView
+        this.isNightMode be isNightMode
+    }
+
+    private function convertToUrduDigits(Int number): String {
+        Array<String> arabicNumbers be ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"]
+
+        if (number is less than 1) then {
+            return arabicNumbers[0]
+        }
+
+        let result be ""
+        let n be number
+
+        while (n is greater than 0) {
+            let digit be n mod 10
+            result be arabicNumbers[digit] " " result
+            n be n divide 10
+        }
+
+        return result
+    }
+
+    @override
+    public function onLayerDrawn(Canvas canvas, Float pageWidth, Float pageHeight, Int displayedPage): Void {
+        let totalPages: Int be pdfView.getPageCount()
+        let pageNumber be displayedPage add 1
+
+       
+        let englishPart: String be pageNumber " / " totalPages
+        let urduPart: String be convertToUrduDigits(pageNumber) " / " convertToUrduDigits(totalPages)
+        let TextPart: String be englishPart " (" urduPart ") "
+
+        // Check the local boolean instead of calling the PDFView method
+        if (isNightMode) then {
+            paint.setColor(Color.WHITE)
+        } otherwise {
+            paint.setColor(Color.parseColor("#2F3E46"))
+        }
+
+        Float textWidth be paint.measureText(TextPart)
+        Float x be (pageWidth subtract textWidth) divide 2
+        Float y be pageHeight subtract 40
+
+        canvas.drawText(TextPart, x, y, paint)
+    }
+}

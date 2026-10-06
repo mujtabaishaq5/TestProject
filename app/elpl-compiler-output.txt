@@ -1,0 +1,156 @@
+=========================================
+       ELPL JVM COMPILER                 
+=========================================
+[1/4] Lexing MainActivity.elpl...
+[2/4] Parsing...
+PARSER LOOP pos=6 TOKEN='use' VALUE=use
+PARSER LOOP pos=12 TOKEN='use' VALUE=use
+PARSER LOOP pos=18 TOKEN='use' VALUE=use
+PARSER LOOP pos=24 TOKEN='use' VALUE=use
+PARSER LOOP pos=30 TOKEN='use' VALUE=use
+PARSER LOOP pos=36 TOKEN='use' VALUE=use
+PARSER LOOP pos=42 TOKEN='use' VALUE=use
+PARSER LOOP pos=48 TOKEN='class' VALUE=class
+ENTER CLASS = MainActivity
+PARAM TYPE = Bundle
+ASSIGN LOOKAHEAD: layout 
+TYPE DECLARATION = LinearLayout VARIABLE = layout
+ASSIGN LOOKAHEAD: button 
+TYPE DECLARATION = Button VARIABLE = button
+ASSIGN LOOKAHEAD: btn 
+TYPE DECLARATION = Button VARIABLE = btn
+===== FUNCTION BODY: onCreate =====
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: AssignmentNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: AssignmentNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: AssignmentNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+FUNCTION BODY NODE: ExpressionStatementNode
+==========================================
+PARAM TYPE = View
+ASSIGN LOOKAHEAD: id 
+TYPE DECLARATION = int VARIABLE = id
+ASSIGN LOOKAHEAD: toast 
+TYPE DECLARATION = Toast VARIABLE = toast
+ASSIGN LOOKAHEAD: tst 
+TYPE DECLARATION = Toast VARIABLE = tst
+===== FUNCTION BODY: onClick =====
+FUNCTION BODY NODE: AssignmentNode
+FUNCTION BODY NODE: IfNode
+==========================================
+LEAVE CLASS = MainActivity
+[3/4] Semantic analysis...
+WARNING: Class 'MainActivity' implements unknown interface 'View$OnClickListener'
+[4/4] Generating JVM bytecode...
+WARNING: Class 'MainActivity' extends unknown class 'Activity'
+BRANCH A: compiling class MainActivity
+[JVM PARAM] onCreate(savedInstanceState) -> Landroid/os/Bundle;
+[DEBUG] Statement: ExpressionStatementNode has line: 15
+[JVM ARG TYPE] arg=0 expression=syed.VariableRef@6e5e91e4 type=Landroid/os/Bundle;
+VARIABLE LOOKUP: savedInstanceState
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {savedInstanceState=1, this=0}
+CURRENT TYPES: {savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: AssignmentNode has line: 17
+[DEBUG] Statement: ExpressionStatementNode has line: 18
+[JVM ARG TYPE] arg=0 expression=syed.NumberLiteral@5034c75a type=I
+VARIABLE LOOKUP: layout
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, savedInstanceState=1, this=0}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: ExpressionStatementNode has line: 19
+[JVM ARG TYPE] arg=0 expression=syed.NumberLiteral@4034c28c type=I
+VARIABLE LOOKUP: layout
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, savedInstanceState=1, this=0}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: AssignmentNode has line: 21
+[DEBUG] Statement: ExpressionStatementNode has line: 22
+[JVM ARG TYPE] arg=0 expression=syed.StringLiteral@48524010 type=Ljava/lang/String;
+VARIABLE LOOKUP: button
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, button=3, savedInstanceState=1, this=0}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: ExpressionStatementNode has line: 23
+[JVM ARG TYPE] arg=0 expression=syed.NumberLiteral@7193666c type=I
+VARIABLE LOOKUP: button
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, button=3, savedInstanceState=1, this=0}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: ExpressionStatementNode has line: 24
+[JVM ARG TYPE] arg=0 expression=syed.ThisNode@402bba4f type=Lcom/syedm/testproject/MainActivity;
+VARIABLE LOOKUP: button
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, button=3, savedInstanceState=1, this=0}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: AssignmentNode has line: 26
+[DEBUG] Statement: ExpressionStatementNode has line: 27
+[JVM ARG TYPE] arg=0 expression=syed.StringLiteral@6356695f type=Ljava/lang/String;
+VARIABLE LOOKUP: btn
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, button=3, savedInstanceState=1, this=0, btn=4}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;, btn=Landroid/widget/Button;}
+GLOBAL TYPES: {}
+[DEBUG] Statement: ExpressionStatementNode has line: 28
+[JVM ARG TYPE] arg=0 expression=syed.MemberAccessNode@59662a0b type=Ljava/lang/Object;
+VARIABLE LOOKUP: btn
+CURRENT METHOD: FUNCTION
+CURRENT LOCALS: {layout=2, button=3, savedInstanceState=1, this=0, btn=4}
+CURRENT TYPES: {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;, btn=Landroid/widget/Button;}
+GLOBAL TYPES: {}
+
+========== ASM FRAME FAILURE ==========
+CLASS      : com/syedm/testproject/MainActivity
+METHOD     : onCreate
+DESCRIPTOR : (Landroid/os/Bundle;)V
+LOCALS     : {layout=2, button=3, savedInstanceState=1, this=0, btn=4}
+TYPES      : {layout=Landroid/widget/LinearLayout;, button=Landroid/widget/Button;, savedInstanceState=Landroid/os/Bundle;, this=Lcom/syedm/testproject/MainActivity;, btn=Landroid/widget/Button;}
+RETURN     : V
+=======================================
+syed.ELPLException: Static method error: No matching static method found: MAGENTA in class android.graphics.Color
+	at syed.JVMCompiler.compileJavaStaticMethodCall(JVMCompiler.java:4054)
+	at syed.JVMCompiler.compileMemberAccess(JVMCompiler.java:3642)
+	at syed.JVMCompiler.compileExpression(JVMCompiler.java:6287)
+	at syed.JVMCompiler.compileJavaInstanceMethodCall(JVMCompiler.java:4316)
+	at syed.JVMCompiler.compileMemberAccess(JVMCompiler.java:3785)
+	at syed.JVMCompiler.compileExpression(JVMCompiler.java:6287)
+	at syed.JVMCompiler.compileStatement(JVMCompiler.java:3261)
+	at syed.JVMCompiler.compileMethodDecl(JVMCompiler.java:1733)
+	at syed.JVMCompiler.compileClassDecl(JVMCompiler.java:1024)
+	at syed.JVMCompiler.compileClassDeclAndNested(JVMCompiler.java:630)
+	at syed.JVMCompiler.compile(JVMCompiler.java:318)
+	at syed.Main.buildJVMTarget(Main.java:494)
+	at syed.Main.main(Main.java:161)
+MainActivity.elpl:28: error: Static method error: No matching static method found: MAGENTA in class android.graphics.Color
+   28 |          btn.setTextColor(Color.MAGENTA)
+                                        ^
+syed.ELPLException: Static method error: No matching static method found: MAGENTA in class android.graphics.Color
+	at syed.JVMCompiler.compileJavaStaticMethodCall(JVMCompiler.java:4054)
+	at syed.JVMCompiler.compileMemberAccess(JVMCompiler.java:3642)
+	at syed.JVMCompiler.compileExpression(JVMCompiler.java:6287)
+	at syed.JVMCompiler.compileJavaInstanceMethodCall(JVMCompiler.java:4316)
+	at syed.JVMCompiler.compileMemberAccess(JVMCompiler.java:3785)
+	at syed.JVMCompiler.compileExpression(JVMCompiler.java:6287)
+	at syed.JVMCompiler.compileStatement(JVMCompiler.java:3261)
+	at syed.JVMCompiler.compileMethodDecl(JVMCompiler.java:1733)
+	at syed.JVMCompiler.compileClassDecl(JVMCompiler.java:1024)
+	at syed.JVMCompiler.compileClassDeclAndNested(JVMCompiler.java:630)
+	at syed.JVMCompiler.compile(JVMCompiler.java:318)
+	at syed.Main.buildJVMTarget(Main.java:494)
+	at syed.Main.main(Main.java:161)

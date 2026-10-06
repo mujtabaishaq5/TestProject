@@ -1,0 +1,39 @@
+package com.syedm.testproject
+
+use com.google.firebase.messaging.FirebaseMessagingService
+use com.google.firebase.messaging.RemoteMessage
+use com.google.firebase.messaging.RemoteMessage$Notification
+use android.util.Log
+
+class FirebaseMsgService extends FirebaseMessagingService {
+
+   @override
+       public function onNewToken(String token): Void {
+           super.onNewToken(token)
+
+           // 1. Build the string using ELPL's space concatenation
+           let msg: String be "Refreshed token: " token
+           Log.d("ELPL_FCM", msg)
+       }
+
+       @override
+       public function onMessageReceived(RemoteMessage message): Void {
+           super.onMessageReceived(message)
+
+           Log.d("ELPL_FCM", "Message received from Firebase Cloud!")
+
+           RemoteMessage$Notification notification be message.getNotification()
+
+           if (notification not equal to null) then {
+               let title: String be notification.getTitle()
+               let body: String be notification.getBody()
+
+               // 2. Build the strings using ELPL's space concatenation
+               let titleMsg: String be "Title: " title
+               let bodyMsg: String be "Body: " body
+
+               Log.d("ELPL_FCM", titleMsg)
+               Log.d("ELPL_FCM", bodyMsg)
+           }
+       }
+}
