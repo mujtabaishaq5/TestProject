@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services") version "4.5.0"
-    id("com.syedm.elpl.android") version "1.0.12" // This plugin is not yet available, pending approval from Gradle.
+    id("com.syedm.elpl.android") version "1.0.13" // This plugin is not yet available, pending approval from Gradle.
 }
 
 android {
