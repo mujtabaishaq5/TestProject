@@ -90,11 +90,25 @@
                 android:id="@+id/btnDonate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
                 android:text="Donate to Test Project"
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:backgroundTint="#8B5CF6"
+                app:cornerRadius="14dp"
+                app:elevation="2dp" />
+
+            <!-- Navigation Button: Donate -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/Chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chat Support"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="#BE3A3A"
                 app:cornerRadius="14dp"
                 app:elevation="2dp" />
 

@@ -47,6 +47,11 @@
             android:name=".FirebaseActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:exported="false" />
+        <activity
+            android:name=".AiChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TestProject"
+            />
 
         <!-- Firebase Messaging Service -->
         <service

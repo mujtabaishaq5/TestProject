@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services") version "4.5.0"
-    id("com.syedm.elpl.android") version "1.0.13" // This plugin is not yet available, pending approval from Gradle.
+    id("io.github.mujtabaishaq5.elpl") version "1.0.13" // This plugin is not yet available, pending approval from Gradle.
 }
 
 android {
@@ -17,11 +17,22 @@ android {
     compileSdk = 37
 
     defaultConfig {
+        // Read GEMINI_API_KEY from local.properties
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(localPropertiesFile.inputStream())
+        }
+        val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY", "")
+
+        // Inject it into Android's generated BuildConfig class
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
+
         applicationId = "com.syedm.testproject"
         minSdk = 24
         targetSdk = 37
         versionCode = 18
-        versionName = "4.1.1"
+        versionName = "4.3.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,6 +48,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -65,6 +77,10 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.firebase:firebase-messaging")
+    // Google Generative AI SDK for Android
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
+// Guava for ListenableFuture and FutureCallbacks
+    implementation("com.google.guava:guava:31.1-android")
 
 
     testImplementation(libs.junit)

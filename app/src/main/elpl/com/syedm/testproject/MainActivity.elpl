@@ -55,11 +55,13 @@ class MainActivity extends AppCompatActivity implements View$OnClickListener, Pu
         let btnSecondId be findViewById(R.id.btnSecond)
         let buttonSec be findViewById(R.id.btnThird)
         let btnDonateId be findViewById(R.id.btnDonate)
+        let Chatbutton be findViewById(R.id.Chat)
 
         btnElplId.setOnClickListener(this)
         btnSecondId.setOnClickListener(this)
         buttonSec.setOnClickListener(this)
         btnDonateId.setOnClickListener(this)
+        Chatbutton.setOnClickListener(this)
 
         startConnection()
     }
@@ -71,26 +73,33 @@ class MainActivity extends AppCompatActivity implements View$OnClickListener, Pu
         let targetBtnTwo be R.id.btnSecond
         let targetBtnThird be R.id.btnThird
         let targetBtnDonate be R.id.btnDonate
+        let Chatbtn be R.id.Chat
 
-        if (id is equal to targetBtnId) then {
-            let tst be StyleableToast.makeText(this, "Direct from ELPL", 1000, R.style.mytoast)
-            tst.show()
 
-        } otherwise if (id is equal to targetBtnTwo) then {
-            Intent intent be new Intent(this, secondActivity.class)
-            this.startActivity(intent)
+        switch (id) {
+         case targetBtnId =>
+          let tst be StyleableToast.makeText(this, "Direct from ELPL", 1000, R.style.mytoast)
+                     tst.show()
+          case targetBtnTwo =>
+                 Intent intent be new Intent(this, secondActivity.class)
+                            startActivity(intent)
+          case targetBtnThird =>
+                   let intent2 be new Intent(this, FirebaseActivity.class)
+                               startActivity(intent2)
+          case targetBtnDonate =>
+                 initiateDonation()
+          case Chatbtn =>
+          Intent intent3 be new Intent(this, AiChatActivity.class)
 
-        } otherwise if (id is equal to targetBtnThird) then {
-            let intent2 be new Intent(this, FirebaseActivity.class)
-            this.startActivity(intent2)
+          startActivity(intent3)
 
-        } otherwise if (id is equal to targetBtnDonate) then {
-            this.initiateDonation()
+          default =>
+           let toast be Toast.makeText(this, "Something has gone wrong, Please try in bit. Or Attempt to update the app", 500)
+                      toast.show()
 
-        } otherwise {
-            let toast be Toast.makeText(this, "Something Gone Wrong", 500)
-            toast.show()
         }
+
+
     }
 
     // 3. Handle the success callback from Play Core

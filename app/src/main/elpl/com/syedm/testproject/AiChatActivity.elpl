@@ -1,0 +1,239 @@
+package com.syedm.testproject
+
+use android.content.SharedPreferences
+use android.os.Bundle
+use android.os.Handler
+use android.os.Looper
+use android.view.View
+use android.widget.Button
+use android.widget.EditText
+use android.widget.ImageButton
+use android.widget.TextView
+use android.widget.Toast
+use android.text.Editable
+use androidx.appcompat.app.AppCompatActivity
+use com.google.ai.client.generativeai.GenerativeModel
+use com.google.ai.client.generativeai.java.GenerativeModelFutures
+use com.google.ai.client.generativeai.type.BlockThreshold
+use com.google.ai.client.generativeai.type.Content
+use com.google.android.material.button.MaterialButton
+use com.google.ai.client.generativeai.type.Content$Builder
+use com.google.ai.client.generativeai.type.GenerateContentResponse
+use com.google.ai.client.generativeai.type.GenerationConfig
+use com.google.ai.client.generativeai.type.GenerationConfig$Builder
+use com.google.ai.client.generativeai.type.HarmCategory
+use com.google.ai.client.generativeai.type.RequestOptions
+use com.google.ai.client.generativeai.type.SafetySetting
+use com.google.ai.client.generativeai.type.Tool
+use com.google.ai.client.generativeai.type.ToolConfig
+use com.google.common.util.concurrent.FutureCallback
+use com.google.common.util.concurrent.Futures
+use com.google.common.util.concurrent.ListenableFuture
+use com.syedm.testproject.BuildConfig
+use java.lang.Runnable
+
+
+class AiChatActivity extends AppCompatActivity implements View$OnClickListener, Runnable {
+    private let promptEditText: EditText
+    private let responseTextView: TextView
+ private let sendButton: MaterialButton
+
+    private let model: GenerativeModelFutures
+    private let mainHandler: Handler
+    private let currentPrompt: Content
+
+    private let uiTaskType: Int be 0
+    private let callbackResultText: String be ""
+    private let callbackErrorMsg: String be ""
+
+    private let PREFS_NAME: String be "AiChatPrefs"
+    private let KEY_IS_BLOCKED: String be "is_user_blocked"
+
+    @override
+    public function onCreate(Bundle savedInstanceState): Void {
+        super.onCreate(savedInstanceState)
+
+        setContentView(R.layout.activity_ai_chat)
+
+
+
+       if (this.isUserBlocked() is equal to true) then {
+           let blockToast: Toast be Toast.makeText(this, "Access restricted due to safety policy.", 1)
+           blockToast.show()
+           this.finish()
+           return
+       }
+
+
+            this.promptEditText be findViewById(R.id.promptEditText)
+                   this.responseTextView be findViewById(R.id.responseTextView)
+                   this.sendButton be findViewById(R.id.btnSend)
+
+                   let backButton: ImageButton be findViewById(R.id.backButton)
+
+                   this.sendButton.setOnClickListener(this)
+                   backButton.setOnClickListener(this)
+
+
+                   let looper: Looper be Looper.getMainLooper()
+                   this.mainHandler be new Handler(looper)
+
+                   List<SafetySetting> safetySettings be []
+
+                   let harassmentSetting: SafetySetting be new SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.ONLY_HIGH)
+                   safetySettings.insert(harassmentSetting)
+
+                   let hateSetting: SafetySetting be new SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.ONLY_HIGH)
+                   safetySettings.insert(hateSetting)
+
+                   let sexualSetting: SafetySetting be new SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.MEDIUM_AND_ABOVE)
+                   safetySettings.insert(sexualSetting)
+
+                   let dangerousSetting: SafetySetting be new SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.ONLY_HIGH)
+                   safetySettings.insert(dangerousSetting)
+
+                   let instructionBuilder: Content$Builder be new Content$Builder()
+                   instructionBuilder.addText("You are 'ELPL AI Support', an official assistant for the ELPL programming language ecosystem and test app. Your mission is to provide concise, factual, and brief answers strictly about ELPL syntax, compiler design, JVM bytecode generation, IDE tools, and app features. QUOTA RULES: You are on a free tier. Be extremely brief and direct. Avoid long introductions. FORBIDDEN TOPICS: Strictly ignore general politics, pop culture, cooking, or unrelated programming languages unless comparing with ELPL. If a user asks about an irrelevant topic, respond ONLY with 'TERMINATE_CHAT'. If a user is sexually inappropriate, respond ONLY with 'BLOCK_USER_SEXUAL'.")
+                   let systemInstruction: Content be instructionBuilder.build()
+
+                   let noConfig: GenerationConfig be null
+                   let noTools: List<Tool> be null
+                   let noToolConfig: ToolConfig be null
+                   let reqOptions: RequestOptions be new RequestOptions()
+
+                   let standaloneAiModel be new GenerativeModel(
+                           "gemini-3.6-flash",
+                           BuildConfig.GEMINI_API_KEY,
+                           noConfig,
+                           safetySettings,
+                           reqOptions,
+                           noTools,
+                           noToolConfig,
+                           systemInstruction
+                   )
+
+                   let futureModel: GenerativeModelFutures be GenerativeModelFutures.from(standaloneAiModel)
+                   this.model be futureModel
+       }
+
+
+
+
+    @override
+    public function onClick(View v): Void {
+        let id be v.getId()
+        let sendId be R.id.btnSend
+        let backId be R.id.backButton
+
+        if (id is equal to sendId) then {
+            // Break down chained text retrieval to protect JVM stack
+            let editable: Editable be this.promptEditText.getText()
+            let rawText: String be editable.toString()
+            let promptText: String be rawText.trim()
+
+            if (promptText.isEmpty() is equal to false) then {
+                this.callAiModel(promptText)
+            } otherwise {
+                let emptyToast: Toast be Toast.makeText(this, "Please enter a question about ELPL.", 0)
+                emptyToast.show()
+            }
+        } otherwise if (id is equal to backId) then {
+            this.finish()
+        }
+    }
+
+  public function callAiModel(String promptText): Void {
+      // 1. Update UI on the main thread before leaving
+      let promptBuilder: Content$Builder be new Content$Builder()
+      promptBuilder.addText(promptText)
+
+      // Save it to 'this' so the thread can access it safely
+      this.currentPrompt be promptBuilder.build()
+
+      this.sendButton.setEnabled(false)
+      this.responseTextView.setText("Thinking...")
+
+      // 2. Spin up the ELPL native background thread
+      Thread aiNetworkThread {
+          try {
+              // 🔥 Cleaned up! Go straight to the network call using this.currentPrompt
+              let futureResponse: ListenableFuture<GenerateContentResponse> be this.model.generateContent([this.currentPrompt])
+              let response: GenerateContentResponse be futureResponse.get()
+
+              let resultText: String be response.getText()
+
+              // 3. Process the results off the main thread
+              if (resultText is equal to null) then {
+                  this.uiTaskType be 2
+              } otherwise if (resultText.contains("BLOCK_USER_SEXUAL") is equal to true) then {
+                  this.uiTaskType be 2
+              } otherwise if (resultText.contains("TERMINATE_CHAT") is equal to true) then {
+                  this.uiTaskType be 3
+              } otherwise {
+                  this.uiTaskType be 1
+                  this.callbackResultText be resultText
+              }
+
+              // 4. Safely push the UI update back to Android's main loop
+              this.mainHandler.post(this)
+
+          } catch t {
+              // 1. Extract the string message from the Throwable
+              let rawMsg: String be t.getMessage()
+
+              // 2. Use standard if-flow since it handles comparison jumps natively
+              let errorMsg: String be ""
+              if (rawMsg not equal to null) then {
+                  errorMsg be rawMsg.toLowerCase()
+              }
+
+              if (errorMsg.contains("429") or errorMsg.contains("quota") or errorMsg.contains("exhausted")) then {
+                  this.callbackErrorMsg be "ELPL AI is experiencing high traffic. Please wait."
+              } otherwise {
+                  this.callbackErrorMsg be "Unable to connect. Please check your internet connection."
+              }
+
+              this.uiTaskType be 4
+              this.mainHandler.post(this)
+          }
+      }
+  }
+
+
+
+    @override
+    public function run(): Void {
+        if (this.uiTaskType is equal to 1) then {
+            this.sendButton.setEnabled(true)
+            this.responseTextView.setText(this.callbackResultText)
+            this.promptEditText.setText("")
+        } otherwise if (this.uiTaskType is equal to 2) then {
+            this.blockUser()
+            let safeToast: Toast be Toast.makeText(this, "Chat terminated due to safety guidelines.", 1)
+            safeToast.show()
+            this.finish()
+        } otherwise if (this.uiTaskType is equal to 3) then {
+            this.sendButton.setEnabled(true)
+            this.responseTextView.setText("I can only answer questions related to ELPL and this app.")
+            this.promptEditText.setText("")
+        } otherwise if (this.uiTaskType is equal to 4) then {
+            this.sendButton.setEnabled(true)
+            this.responseTextView.setText(this.callbackErrorMsg)
+            let errToast: Toast be Toast.makeText(this, "Connection error.", 1)
+            errToast.show()
+        }
+    }
+
+    public function isUserBlocked(): Boolean {
+        // Use 0 instead of MODE_PRIVATE constant
+        let prefs: SharedPreferences be this.getSharedPreferences(this.PREFS_NAME, 0)
+        return prefs.getBoolean(this.KEY_IS_BLOCKED, false)
+    }
+
+    public function blockUser(): Void {
+        let prefs: SharedPreferences be this.getSharedPreferences(this.PREFS_NAME, 0)
+        let editor be prefs.edit()
+        editor.putBoolean(this.KEY_IS_BLOCKED, true)
+        editor.apply()
+    }
+}

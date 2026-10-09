@@ -7,12 +7,13 @@ use android.os.Handler
 use android.os.Looper
 use android.widget.TextView
 use android.graphics.Color
+use com.syedm.testproject.BuildConfig
 use java.lang.Runnable // No runnable in ELPL, so you have to leverage Jvm's
 
 
 class SplashScreenActivity extends AppCompatActivity implements Runnable {
 
-     private final let VERSION: String be "4.1.1";
+     private final let VERSION: String be BuildConfig.VERSION_NAME;
 
     public function onCreate(Bundle savedInstanceState): Void {
         super.onCreate(savedInstanceState)
