@@ -1,20 +1,33 @@
 package com.syedm.testproject.widget
 
-
 use android.appwidget.AppWidgetManager
 use android.appwidget.AppWidgetProvider
 use android.content.Context
 use android.widget.RemoteViews
+use android.text.Html
 
-
-public class widgetProvider extends AppWidgetProvider{
+public class widgetProvider extends AppWidgetProvider {
 
    @override
    public function onUpdate(Context context, AppWidgetManager appWidgetManager, Array<Int> appWidgetIds): Void {
 
-     foreach appWidgetId : appWidgetIds{
-        RemoteViews views be new RemoteViews(context.getPackageName(), R.layout.elpl_widget)
-        appWidgetManager.updateAppWidget(appWidgetId, views)
-     }
+       let highlightedCode: String be "<font color='#C678DD'>use</font> <font color='#E5C07B'>myAndroid</font><br><br>"
+       "<font color='#C678DD'>class</font> <font color='#E5C07B'>TestProject</font> "
+       "<font color='#C678DD'>extends</font> <font color='#E5C07B'>Android</font> {<br>"
+       "&nbsp;&nbsp;&nbsp;&nbsp;<font color='#61AFEF'>printnl</font> "
+       "<font color='#98C379'>&quot;Direct from ELPL&quot;</font><br>" "}"
+
+       foreach appWidgetId : appWidgetIds {
+
+               let id: Int be appWidgetId
+
+           RemoteViews views be new RemoteViews(context.getPackageName(), R.layout.elpl_widget)
+
+           // 2. Use setTextViewText instead of findViewById to apply the HTML
+           views.setTextViewText(R.id.elpl_code_text, Html.fromHtml(highlightedCode, Html.FROM_HTML_MODE_LEGACY))
+
+           // 3. Push the update to the AppWidgetManager
+           appWidgetManager.updateAppWidget(id, views)
+       }
    }
 }

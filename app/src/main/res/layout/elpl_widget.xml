@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fontFamily="monospace"
-        android:text="use myAndroid\n\nclass TestProject extends Android {\n    printnl &quot;Direct from Android&quot;\n}"
-        android:textColor="#80A0B0"
+        android:textColor="#ABB2BF"
         android:textSize="14sp"
         android:lineSpacingExtra="4dp" />
 
