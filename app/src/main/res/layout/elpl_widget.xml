@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg"
+    android:padding="20dp">
+
+    <!-- ELPL Code Background -->
+    <TextView
+        android:id="@+id/elpl_code_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="monospace"
+        android:text="use myAndroid\n\nclass TestProject extends Android {\n    printnl &quot;Direct from Android&quot;\n}"
+        android:textColor="#80A0B0"
+        android:textSize="14sp"
+        android:lineSpacingExtra="4dp" />
+
+    <!-- Live Updating Clock Overlay -->
+    <TextClock
+        android:id="@+id/live_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:format12Hour="h:mm a"
+        android:format24Hour="HH:mm"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4" />
+
+</RelativeLayout>

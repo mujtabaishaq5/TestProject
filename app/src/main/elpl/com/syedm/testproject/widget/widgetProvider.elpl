@@ -1,0 +1,20 @@
+package com.syedm.testproject.widget
+
+
+use android.appwidget.AppWidgetManager
+use android.appwidget.AppWidgetProvider
+use android.content.Context
+use android.widget.RemoteViews
+
+
+public class widgetProvider extends AppWidgetProvider{
+
+   @override
+   public function onUpdate(Context context, AppWidgetManager appWidgetManager, Array<Int> appWidgetIds): Void {
+
+     foreach appWidgetId : appWidgetIds{
+        RemoteViews views be new RemoteViews(context.getPackageName(), R.layout.elpl_widget)
+        appWidgetManager.updateAppWidget(appWidgetId, views)
+     }
+   }
+}
