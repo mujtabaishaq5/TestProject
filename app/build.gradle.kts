@@ -31,7 +31,7 @@ android {
         applicationId = "com.syedm.testproject"
         minSdk = 24
         targetSdk = 37
-        versionCode = 18
+        versionCode = 19
         versionName = "4.3.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -30,7 +30,7 @@ use com.google.common.util.concurrent.FutureCallback
 use com.google.common.util.concurrent.Futures
 use com.google.common.util.concurrent.ListenableFuture
 use com.syedm.testproject.BuildConfig
-use java.lang.Runnable
+use java.lang.Runnable // you can use anything from JVM directly like this
 
 
 class AiChatActivity extends AppCompatActivity implements View$OnClickListener, Runnable {

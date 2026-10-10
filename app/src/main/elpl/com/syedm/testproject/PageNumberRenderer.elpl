@@ -53,7 +53,7 @@ class PageNumberRenderer implements OnDrawListener {
         if (isNightMode) then {
             paint.setColor(Color.WHITE)
         } otherwise {
-            paint.setColor(Color.parseColor("#2F3E46"))
+            paint.setColor(Color.parseColor("#2F3E46")) // if you wanna use hex codes
         }
 
         Float textWidth be paint.measureText(TextPart)

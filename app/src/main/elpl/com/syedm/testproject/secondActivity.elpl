@@ -13,6 +13,7 @@ use com.github.barteksc.pdfviewer.link.DefaultLinkHandler
 use com.github.barteksc.pdfviewer.util.FitPolicy
 use com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 use io.github.muddz.styleabletoast.StyleableToast
+use android.graphics.Color
 
 class secondActivity extends AppCompatActivity implements View$OnClickListener, OnPageChangeListener{
 
@@ -27,7 +28,6 @@ class secondActivity extends AppCompatActivity implements View$OnClickListener, 
 
     public function onCreate(Bundle savedInstanceState): Void {
         super.onCreate(savedInstanceState)
-
 
         setContentView(R.layout.activity_pdf_viewer)
 
