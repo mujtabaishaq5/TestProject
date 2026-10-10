@@ -7,3 +7,4 @@ app/google-services.json
 *.jks
 *.keystore
 key.properties
+local.properties
