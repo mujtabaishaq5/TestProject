@@ -6,9 +6,11 @@ use android.view.View
 use android.widget.Button
 use android.widget.LinearLayout
 use android.widget.Toast
+use android.graphics.Color
 use com.google.firebase.FirebaseApp
 use com.google.firebase.database.FirebaseDatabase
 use com.google.firebase.database.DatabaseReference
+use java.lang.System
 
 class FirebaseActivity extends AppCompatActivity implements View$OnClickListener {
 
@@ -20,8 +22,20 @@ class FirebaseActivity extends AppCompatActivity implements View$OnClickListener
     public function onCreate(Bundle savedInstanceState): Void {
         super.onCreate(savedInstanceState)
 
+        // 1. Explicitly initialize state
+        this.clickCount be 0
+
         FirebaseApp.initializeApp(this)
-     // Have not used xml for this, Created layout programmtically
+
+        // 2. Enable offline persistence (Production best practice)
+        // Must be called immediately after getInstance(). Ensures clicks
+        // are saved locally and synced later if the user is in a subway/offline.
+        this.database be FirebaseDatabase.getInstance()
+
+
+        this.myRef be this.database.getReference("elpl_test")
+
+        // UI Setup
         LinearLayout layout be new LinearLayout(this)
         layout.setOrientation(1)
         layout.setGravity(17)
@@ -29,31 +43,39 @@ class FirebaseActivity extends AppCompatActivity implements View$OnClickListener
         this.btnSend be new Button(this)
         btnSend.setText("Send to Firebase")
         btnSend.setGravity(17)
-        btnSend.setBackgroundColor(Color.parseColor("#F5E5A4")); // sweet yellow color
+        btnSend.setBackgroundColor(Color.parseColor("#F5E5A4"))
 
         layout.addView(this.btnSend)
         this.setContentView(layout)
 
-        // Native static method call (ELPL handles this perfectly!)
-        this.database be FirebaseDatabase.getInstance()
-
-        this.myRef be this.database.getReference("elpl_test")
         btnSend.setOnClickListener(this)
     }
 
   @override
   public function onClick(View v): Void {
-      if (clickCount is less than 3) then {
-          clickCount pels 1
+      if (this.clickCount is less than 3) then {
+          // 3. UI Debouncing: Disable immediately to prevent multi-tap spamming
+          this.btnSend.setEnabled(false)
 
-          let message be "Hello from ELPL! Click count: " this.clickCount
+          this.clickCount pels 1
+
+          // 4. Data Auditing: Append a JVM timestamp so you can sort/verify events in production
+          let timestamp be System.currentTimeMillis()
+          let message be "Hello from ELPL! Click count: " this.clickCount " | Time: " timestamp
+
           this.myRef.push().setValue(message)
 
-          let tst be Toast.makeText(this, "Data sent to Firebase!", 1000)
+          // 5. Fixed Magic Number: Toast duration expects 0 (LENGTH_SHORT) or 1 (LENGTH_LONG)
+          let tst be Toast.makeText(this, "Data sent to Firebase!", 0)
           tst.show()
 
+          // Re-enable the button only if they haven't hit the absolute limit yet
+          if (this.clickCount is less than 3) then {
+              this.btnSend.setEnabled(true)
+          }
+
       } otherwise {
-          let toast be Toast.makeText(this, "Max clicks reached!", 1000)
+          let toast be Toast.makeText(this, "Max clicks reached!", 0)
           toast.show()
       }
   }

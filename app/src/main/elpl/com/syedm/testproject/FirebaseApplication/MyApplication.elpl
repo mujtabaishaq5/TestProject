@@ -1,0 +1,12 @@
+package com.syedm.testproject.FirebaseApplication
+
+use android.app.Application
+use com.google.firebase.database.FirebaseDatabase
+
+class MyApplication extends Application {
+    @override
+    public function onCreate(): Void {
+        super.onCreate()
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+    }
+}
